@@ -9,10 +9,10 @@
             margin: 0;
             padding: 0;
             font-family: 'Times New Roman', serif;
-            background-color: #f5f5f5;
+            /* background-color: #f5f5f5; */ /* Dihapus karena ada background image */
             color: #333;
             overflow-x: hidden;
-            background-image: url(yesus-kasih.webp);
+            background-image: url(ambe-rangga.webp);
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -25,7 +25,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6); /* Sedikit digelapkan untuk kontras teks yang lebih baik */
             z-index: -1;
         }
 
@@ -37,6 +37,11 @@
             position: relative;
             z-index: 1;
             color: white;
+        }
+
+        /* Menyembunyikan teks yang akan dianimasikan awalnya */
+        #mainTitle, #name1, #name2, #ripDates, #verse1, #verse2 {
+            opacity: 0;
         }
 
         h1 {
@@ -54,7 +59,8 @@
 
         .name {
             font-size: 2rem;
-            margin: 40px 0;
+            /* margin: 40px 0; Dikurangi sedikit agar tidak terlalu jauh jika ada 2 nama */
+            margin: 20px 0;
             font-weight: bold;
             color: #fff;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
@@ -68,7 +74,7 @@
         .flower {
             position: fixed;
             pointer-events: none;
-            z-index: 10; /* Pastikan bunga di atas konten lain tapi di bawah kontrol jika perlu */
+            z-index: 10;
             animation: float linear forwards;
         }
 
@@ -78,7 +84,7 @@
                 opacity: 1;
             }
             100% {
-                transform: translateY(-100px) translateX(calc(var(--random-x) * 80px)) rotate(calc(var(--random-rotate) * 1deg)); /* Mengurangi X agar tidak terlalu lebar, menambah rotasi acak */
+                transform: translateY(-100px) translateX(calc(var(--random-x) * 80px)) rotate(calc(var(--random-rotate) * 1deg));
                 opacity: 0;
             }
         }
@@ -90,7 +96,7 @@
             background: rgba(255, 255, 255, 0.7);
             padding: 10px;
             border-radius: 5px;
-            z-index: 20; /* Pastikan kontrol di atas bunga */
+            z-index: 20;
         }
 
         button {
@@ -104,7 +110,7 @@
         }
         
         #pauseBtn {
-            display: none; /* Sembunyikan tombol jeda secara default */
+            display: none;
         }
 
         .cross {
@@ -113,6 +119,21 @@
             color: gold;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
         }
+
+        /* Efek Kursor untuk Animasi Ketik */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink-caret 0.75s step-end infinite;
+            color: gold; /* Warna kursor bisa disesuaikan */
+            margin-left: 3px; /* Jarak kursor dari teks */
+            font-weight: bold;
+        }
+
+        @keyframes blink-caret {
+            from, to { opacity: 0 } /* Kursor berkedip */
+            50% { opacity: 1 }
+        }
+
     </style>
 </head>
 <body>
@@ -120,31 +141,31 @@
     
     <div class="container">
         <div class="cross">✝</div>
-        <h1>Selamat Jalan</h1>
+        <h1 id="mainTitle">Selamat Jalan</h1>
         
-        <div class="name">
-            Bpk Missi'
+        <div class="name" id="name1">
+            Bapa' Missi'
         </div>
-		 <div class="name">
+		 <div class="name" id="name2">
             " Ambe' Rangga "
         </div>
         
-        <div class="dates">
-            Rest In Peace - [27 Mei 2025]
+        <div class="dates" id="ripDates">
+            Rest In Peace - 27 Mei 2025
         </div>
         
-        <div class="verse">
-            "Tuhan dekat pada orang yang patah hati,<br>
-            dan Ia menyelamatkan orang yang remuk jiwanya."<br>
-            Mazmur 34:19
+        <div class="verse" id="verse1">
+            "Aku telah mengakhiri pertandingan yang baik,<br>
+            aku telah mencapai garis akhir dan aku telah memelihara iman."<br>
+            2 Timotius 4:7
+        </div>
+		
+		<div class="verse" id="verse2">
+            Dari Keluarga Besar<br>
+            Bapak Yusuf<br>
         </div>
         
-        <div class="verse">
-            "Berbahagialah orang yang berdukacita,<br>
-            karena mereka akan dihibur."<br>
-            Matius 5:4
-        </div>
-        
+               
         <div class="cross">✝</div>
     </div>
     
@@ -166,32 +187,25 @@
 
         function attemptPlayMusic() {
             if (musicPlayedOnce) return;
-
-            audio.volume = 0.5; // Mengatur volume agar tidak terlalu keras
+            audio.volume = 0.5;
             const playPromise = audio.play();
-            
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
-                    // Autoplay berhasil (atau interaksi pengguna pertama)
                     musicPlayedOnce = true;
                     playBtn.style.display = 'none';
                     pauseBtn.style.display = 'inline-block';
-                    // Hapus listener klik setelah musik berhasil diputar
                     document.body.removeEventListener('click', attemptPlayMusic);
                     document.body.removeEventListener('touchend', attemptPlayMusic);
                 }).catch(error => {
-                    // Autoplay diblokir, tunggu interaksi pengguna
                     console.log("Autoplay dicegah. Menunggu interaksi pengguna.");
                     playBtn.style.display = 'inline-block';
                     pauseBtn.style.display = 'none';
-                    // Tambahkan listener untuk klik pertama jika autoplay gagal
-                    if (!musicPlayedOnce) { // Hanya tambahkan jika belum pernah diputar
+                    if (!musicPlayedOnce) {
                         document.body.addEventListener('click', attemptPlayMusic, { once: true });
                         document.body.addEventListener('touchend', attemptPlayMusic, { once: true });
                     }
                 });
             } else {
-                 // Fallback untuk browser lama yang tidak mengembalikan promise
                 playBtn.style.display = 'inline-block';
                 pauseBtn.style.display = 'none';
                 if (!musicPlayedOnce) {
@@ -200,16 +214,11 @@
                 }
             }
         }
-
-        window.onload = function() {
-            attemptPlayMusic(); // Coba putar musik saat load
-            createFlowers();    // Buat bunga-bunga
-        };
         
         playBtn.addEventListener('click', function() {
             if (audio.paused) {
                 audio.play().then(() => {
-                    musicPlayedOnce = true; // Tandai bahwa musik telah diputar setidaknya sekali
+                    musicPlayedOnce = true;
                     playBtn.style.display = 'none';
                     pauseBtn.style.display = 'inline-block';
                 }).catch(error => console.error("Error playing audio:", error));
@@ -223,58 +232,107 @@
         });
         
         function createFlowers() {
-            // Warna kuning emas dan variasinya
-            const goldColors = [
-                '#FFD700', // Gold
-                '#DAA520', // GoldenRod
-                '#B8860B', // DarkGoldenRod
-                '#F0E68C', // Khaki
-                '#FAFAD2', // LightGoldenRodYellow
-                '#EEE8AA'  // PaleGoldenRod
-            ];
-            
+            const goldColors = ['#FFD700', '#DAA520', '#B8860B', '#F0E68C', '#FAFAD2', '#EEE8AA'];
             const flowerSymbols = ['❀', '✿', '❁', '🌸', '🏵️', '🌺', '🌻', '🌼', '🌷', '⚘'];
-            
             function createFlower() {
                 const flower = document.createElement('div');
                 flower.className = 'flower';
-                
                 const symbol = flowerSymbols[Math.floor(Math.random() * flowerSymbols.length)];
                 flower.innerHTML = symbol;
-                
                 flower.style.color = goldColors[Math.floor(Math.random() * goldColors.length)];
-                
-                const size = Math.random() * 20 + 15; // Ukuran sedikit lebih kecil (15px - 35px)
+                const size = Math.random() * 20 + 15;
                 flower.style.fontSize = `${size}px`;
-                
                 const startX = Math.random() * window.innerWidth;
                 flower.style.left = `${startX}px`;
-                flower.style.bottom = `-${size}px`; // Mulai dari sedikit di bawah viewport
-                
-                const randomX = Math.random() * 1.0 - 0.5; // Gerakan horizontal lebih lembut (-0.5 sampai 0.5)
+                flower.style.bottom = `-${size}px`;
+                const randomX = Math.random() * 1.0 - 0.5;
                 flower.style.setProperty('--random-x', randomX);
-
-                const randomRotate = Math.random() * 720 - 360; // Rotasi acak antara -360 dan 360 derajat
+                const randomRotate = Math.random() * 720 - 360;
                 flower.style.setProperty('--random-rotate', randomRotate);
-                
-                // Durasi animasi diperpanjang agar lebih lambat (misal 30-90 detik)
                 const duration = Math.random() * 60 + 30; 
                 flower.style.animationDuration = `${duration}s`;
-                
                 document.body.appendChild(flower);
-                
                 setTimeout(() => {
-                    if (flower.parentNode) {
-                        flower.parentNode.removeChild(flower);
-                    }
+                    if (flower.parentNode) flower.parentNode.removeChild(flower);
                 }, duration * 1000);
             }
-            
-            createFlower(); // Buat bunga pertama segera
-            
-            // Buat bunga baru secara berkala, mungkin lebih jarang jika durasi panjang
-            setInterval(createFlower, 2000); // Misalnya, setiap 2 detik
+            createFlower();
+            setInterval(createFlower, 2000);
         }
+
+        /**
+         * Fungsi untuk animasi ketikan teks.
+         * @param {HTMLElement} element - Elemen DOM yang teksnya akan dianimasikan.
+         * @param {string} textToType - Teks (termasuk HTML seperti <br>) yang akan diketik.
+         * @param {number} speed - Kecepatan ketik dalam milidetik per karakter.
+         * @returns {Promise} - Promise yang resolve ketika animasi selesai.
+         */
+        function typeWriter(element, textToType, speed = 90) {
+            return new Promise((resolve) => {
+                element.style.opacity = '1'; // Tampilkan elemen saat mulai diketik
+                element.innerHTML = '';    // Kosongkan konten awal
+                element.classList.add('typing-cursor'); // Tambahkan kelas untuk kursor
+
+                let i = 0;
+                let currentHtml = ''; // Untuk membangun HTML secara bertahap
+                const originalText = textToType; // Simpan teks asli
+
+                function type() {
+                    if (i < originalText.length) {
+                        // Deteksi tag <br> (case-insensitive dan bisa dengan atau tanpa spasi/slash)
+                        if (originalText.substring(i).match(/^<br\s*\/?>/i)) {
+                            const match = originalText.substring(i).match(/^<br\s*\/?>/i);
+                            currentHtml += match[0]; // Tambahkan tag <br> apa adanya
+                            i += match[0].length;    // Loncat sepanjang tag <br>
+                        } else {
+                            currentHtml += originalText.charAt(i);
+                            i++;
+                        }
+                        element.innerHTML = currentHtml;
+                        setTimeout(type, speed);
+                    } else {
+                        element.classList.remove('typing-cursor'); // Hapus kursor setelah selesai
+                        resolve(); // Animasi selesai
+                    }
+                }
+                type();
+            });
+        }
+
+        async function startTextAnimations() {
+            // Sedikit jeda agar halaman siap dan musik mungkin sudah mulai
+            await new Promise(resolve => setTimeout(resolve, 500)); 
+
+            const mainTitleEl = document.getElementById('mainTitle');
+            const name1El = document.getElementById('name1');
+            const name2El = document.getElementById('name2');
+            const ripDatesEl = document.getElementById('ripDates');
+            const verse1El = document.getElementById('verse1');
+            const verse2El = document.getElementById('verse2');
+
+            // Ambil teks asli dari HTML (termasuk tag <br>)
+            // .trim() untuk menghilangkan spasi ekstra di awal/akhir yang mungkin ada dari markup HTML
+            const mainTitleText = mainTitleEl.innerHTML.trim();
+            const name1Text = name1El.innerHTML.trim();
+            const name2Text = name2El.innerHTML.trim();
+            const ripDatesText = ripDatesEl.innerHTML.trim();
+            const verse1Text = verse1El.innerHTML.trim();
+            const verse2Text = verse2El.innerHTML.trim();
+            
+            // Kecepatan ketik bisa disesuaikan per elemen
+            await typeWriter(mainTitleEl, mainTitleText, 120);
+            await typeWriter(name1El, name1Text, 100);
+            await typeWriter(name2El, name2Text, 100);
+            await typeWriter(ripDatesEl, ripDatesText, 80);
+            await typeWriter(verse1El, verse1Text, 70);
+            await typeWriter(verse2El, verse2Text, 70);
+        }
+
+        window.onload = function() {
+            attemptPlayMusic(); 
+            createFlowers();    
+            startTextAnimations(); // Mulai animasi ketikan teks
+        };
     </script>
 </body>
 </html>
