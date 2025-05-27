@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turut Berdukacita - In Memoriam</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Times New Roman', serif;
+            background-color: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+            background-image: url(yesus-kasih.webp);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .verse {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .name {
+            font-size: 2rem;
+            margin: 40px 0;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        .dates {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+
+        .flower {
+            position: fixed;
+            pointer-events: none;
+            z-index: 10; /* Pastikan bunga di atas konten lain tapi di bawah kontrol jika perlu */
+            animation: float linear forwards;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(calc(var(--random-x) * 80px)) rotate(calc(var(--random-rotate) * 1deg)); /* Mengurangi X agar tidak terlalu lebar, menambah rotasi acak */
+                opacity: 0;
+            }
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 20; /* Pastikan kontrol di atas bunga */
+        }
+
+        button {
+            background: #555;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        
+        #pauseBtn {
+            display: none; /* Sembunyikan tombol jeda secara default */
+        }
+
+        .cross {
+            font-size: 3rem;
+            margin: 30px 0;
+            color: gold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    
+    <div class="container">
+        <div class="cross">✝</div>
+        <h1>Selamat Jalan</h1>
+        
+        <div class="name">
+            Bapa' Missi'
+        </div>
+		 <div class="name">
+            " Ambe' Rangga "
+        </div>
+        
+        <div class="dates">
+            Rest In Peace - [27 Mei 2025]
+        </div>
+        
+        <div class="verse">
+            "Tuhan dekat pada orang yang patah hati,<br>
+            dan Ia menyelamatkan orang yang remuk jiwanya."<br>
+            Mazmur 34:19
+        </div>
+        
+        <div class="verse">
+            "Berbahagialah orang yang berdukacita,<br>
+            karena mereka akan dihibur."<br>
+            Matius 5:4
+        </div>
+        
+        <div class="cross">✝</div>
+    </div>
+    
+    <div class="controls">
+        <button id="playBtn">Putar Musik</button>
+        <button id="pauseBtn">Jeda Musik</button>
+    </div>
+    
+    <audio id="bgMusic" loop>
+        <source src="nearer-god.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+    
+    <script>
+        const audio = document.getElementById('bgMusic');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        let musicPlayedOnce = false;
+
+        function attemptPlayMusic() {
+            if (musicPlayedOnce) return;
+
+            audio.volume = 0.5; // Mengatur volume agar tidak terlalu keras
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Autoplay berhasil (atau interaksi pengguna pertama)
+                    musicPlayedOnce = true;
+                    playBtn.style.display = 'none';
+                    pauseBtn.style.display = 'inline-block';
+                    // Hapus listener klik setelah musik berhasil diputar
+                    document.body.removeEventListener('click', attemptPlayMusic);
+                    document.body.removeEventListener('touchend', attemptPlayMusic);
+                }).catch(error => {
+                    // Autoplay diblokir, tunggu interaksi pengguna
+                    console.log("Autoplay dicegah. Menunggu interaksi pengguna.");
+                    playBtn.style.display = 'inline-block';
+                    pauseBtn.style.display = 'none';
+                    // Tambahkan listener untuk klik pertama jika autoplay gagal
+                    if (!musicPlayedOnce) { // Hanya tambahkan jika belum pernah diputar
+                        document.body.addEventListener('click', attemptPlayMusic, { once: true });
+                        document.body.addEventListener('touchend', attemptPlayMusic, { once: true });
+                    }
+                });
+            } else {
+                 // Fallback untuk browser lama yang tidak mengembalikan promise
+                playBtn.style.display = 'inline-block';
+                pauseBtn.style.display = 'none';
+                if (!musicPlayedOnce) {
+                    document.body.addEventListener('click', attemptPlayMusic, { once: true });
+                    document.body.addEventListener('touchend', attemptPlayMusic, { once: true });
+                }
+            }
+        }
+
+        window.onload = function() {
+            attemptPlayMusic(); // Coba putar musik saat load
+            createFlowers();    // Buat bunga-bunga
+        };
+        
+        playBtn.addEventListener('click', function() {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    musicPlayedOnce = true; // Tandai bahwa musik telah diputar setidaknya sekali
+                    playBtn.style.display = 'none';
+                    pauseBtn.style.display = 'inline-block';
+                }).catch(error => console.error("Error playing audio:", error));
+            }
+        });
+        
+        pauseBtn.addEventListener('click', function() {
+            audio.pause();
+            playBtn.style.display = 'inline-block';
+            pauseBtn.style.display = 'none';
+        });
+        
+        function createFlowers() {
+            // Warna kuning emas dan variasinya
+            const goldColors = [
+                '#FFD700', // Gold
+                '#DAA520', // GoldenRod
+                '#B8860B', // DarkGoldenRod
+                '#F0E68C', // Khaki
+                '#FAFAD2', // LightGoldenRodYellow
+                '#EEE8AA'  // PaleGoldenRod
+            ];
+            
+            const flowerSymbols = ['❀', '✿', '❁', '🌸', '🏵️', '🌺', '🌻', '🌼', '🌷', '⚘'];
+            
+            function createFlower() {
+                const flower = document.createElement('div');
+                flower.className = 'flower';
+                
+                const symbol = flowerSymbols[Math.floor(Math.random() * flowerSymbols.length)];
+                flower.innerHTML = symbol;
+                
+                flower.style.color = goldColors[Math.floor(Math.random() * goldColors.length)];
+                
+                const size = Math.random() * 20 + 15; // Ukuran sedikit lebih kecil (15px - 35px)
+                flower.style.fontSize = `${size}px`;
+                
+                const startX = Math.random() * window.innerWidth;
+                flower.style.left = `${startX}px`;
+                flower.style.bottom = `-${size}px`; // Mulai dari sedikit di bawah viewport
+                
+                const randomX = Math.random() * 1.0 - 0.5; // Gerakan horizontal lebih lembut (-0.5 sampai 0.5)
+                flower.style.setProperty('--random-x', randomX);
+
+                const randomRotate = Math.random() * 720 - 360; // Rotasi acak antara -360 dan 360 derajat
+                flower.style.setProperty('--random-rotate', randomRotate);
+                
+                // Durasi animasi diperpanjang agar lebih lambat (misal 30-90 detik)
+                const duration = Math.random() * 60 + 30; 
+                flower.style.animationDuration = `${duration}s`;
+                
+                document.body.appendChild(flower);
+                
+                setTimeout(() => {
+                    if (flower.parentNode) {
+                        flower.parentNode.removeChild(flower);
+                    }
+                }, duration * 1000);
+            }
+            
+            createFlower(); // Buat bunga pertama segera
+            
+            // Buat bunga baru secara berkala, mungkin lebih jarang jika durasi panjang
+            setInterval(createFlower, 2000); // Misalnya, setiap 2 detik
+        }
+    </script>
+</body>
+</html>
