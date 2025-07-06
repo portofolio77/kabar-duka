@@ -12,7 +12,7 @@
             /* background-color: #f5f5f5; */ /* Dihapus karena ada background image */
             color: #333;
             overflow-x: hidden;
-            background-image: url(ambe-rangga.webp);
+            background-image: url(alm-piet.webp);
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -40,7 +40,7 @@
         }
 
         /* Menyembunyikan teks yang akan dianimasikan awalnya */
-        #mainTitle, #name1, #name2, #ripDates, #verse1, #verse2 {
+        #mainTitle, #name1, #name2, #bornDates, #ripDates, #verse1, #verse2 {
             opacity: 0;
         }
 
@@ -107,6 +107,11 @@
             border-radius: 3px;
             cursor: pointer;
             margin: 0 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #333;
         }
         
         #pauseBtn {
@@ -138,37 +143,43 @@
 </head>
 <body>
     <div class="overlay"></div>
-    
-    <div class="container">
+        <main class="container">
         <div class="cross">✝</div>
         <h1 id="mainTitle">Selamat Jalan</h1>
         
         <div class="name" id="name1">
-            Bpk Markus Misi' Tandi Bone
+            PIET FRANS HUMBAS
         </div>
-		 <div class="name" id="name2">
-            " Ambe' Rangga "
+
+        <div class="name" id="name2">
+            " TUA PIET "
         </div>
         
+        <div class="dates" id="bornDates">
+            Born  - 10 Nopember 1939
+        </div>
+
         <div class="dates" id="ripDates">
-            Rest In Peace - 27 Mei 2025
+            Rest In Peace  - 06 Juli 2025
         </div>
         
-        <div class="verse" id="verse1">
+        <p class="verse" id="verse1">
             "Aku telah mengakhiri pertandingan yang baik,<br>
             aku telah mencapai garis akhir dan aku telah memelihara iman."<br>
             2 Timotius 4:7
-        </div>
-		
-		<div class="verse" id="verse2">
-            Dari Keluarga Besar<br>
-            Bapak Yusuf,
-	    Surabaya<br>
-        </div>
+        </p>
+        
+        <p class="verse" id="verse2">
+            Dari Keluarga Besar Alm JOHANIS HUMBAS ( Surabaya )<br>
+            Keluarga TINEKE HUMBAS, SE<br>
+            Keluarga JEMMY REINARD HUMBAS<br>
+            Keluarga MARTHIN ALFRED HUMBAS<br>
+            Keluarga NATALINA SYLVIA ARIANI HUMBAS<br>
+        </p>
         
                
         <div class="cross">✝</div>
-    </div>
+    </main>
     
     <div class="controls">
         <button id="playBtn">Putar Musik</button>
@@ -184,53 +195,58 @@
         const audio = document.getElementById('bgMusic');
         const playBtn = document.getElementById('playBtn');
         const pauseBtn = document.getElementById('pauseBtn');
-        let musicPlayedOnce = false;
 
-        function attemptPlayMusic() {
-            if (musicPlayedOnce) return;
-            audio.volume = 0.5;
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    musicPlayedOnce = true;
-                    playBtn.style.display = 'none';
-                    pauseBtn.style.display = 'inline-block';
-                    document.body.removeEventListener('click', attemptPlayMusic);
-                    document.body.removeEventListener('touchend', attemptPlayMusic);
-                }).catch(error => {
-                    console.log("Autoplay dicegah. Menunggu interaksi pengguna.");
-                    playBtn.style.display = 'inline-block';
-                    pauseBtn.style.display = 'none';
-                    if (!musicPlayedOnce) {
-                        document.body.addEventListener('click', attemptPlayMusic, { once: true });
-                        document.body.addEventListener('touchend', attemptPlayMusic, { once: true });
-                    }
-                });
-            } else {
-                playBtn.style.display = 'inline-block';
-                pauseBtn.style.display = 'none';
-                if (!musicPlayedOnce) {
-                    document.body.addEventListener('click', attemptPlayMusic, { once: true });
-                    document.body.addEventListener('touchend', attemptPlayMusic, { once: true });
-                }
-            }
+        function updateMusicControls(isPlaying) {
+            playBtn.style.display = isPlaying ? 'none' : 'inline-block';
+            pauseBtn.style.display = isPlaying ? 'inline-block' : 'none';
         }
-        
-        playBtn.addEventListener('click', function() {
+
+        function playMusic() {
             if (audio.paused) {
                 audio.play().then(() => {
-                    musicPlayedOnce = true;
-                    playBtn.style.display = 'none';
-                    pauseBtn.style.display = 'inline-block';
-                }).catch(error => console.error("Error playing audio:", error));
+                    updateMusicControls(true);
+                }).catch(error => {
+                    console.error("Error playing audio:", error);
+                    updateMusicControls(false);
+                });
             }
-        });
-        
-        pauseBtn.addEventListener('click', function() {
+        }
+
+        function pauseMusic() {
             audio.pause();
-            playBtn.style.display = 'inline-block';
-            pauseBtn.style.display = 'none';
-        });
+            updateMusicControls(false);
+        }
+
+        // Fungsi ini akan mencoba memutar musik secara otomatis.
+        // Jika gagal (karena diblokir browser), ia akan menyiapkan listener
+        // agar musik berputar saat pengguna pertama kali berinteraksi (klik/sentuh).
+        function attemptAutoplay() {
+            audio.volume = 0.5;
+            audio.play().then(() => {
+                // Autoplay berhasil!
+                updateMusicControls(true);
+            }).catch(error => {
+                // Autoplay dicegah oleh browser.
+                console.log("Autoplay dicegah. Menunggu interaksi pengguna.");
+                updateMusicControls(false);
+                
+                // Fungsi yang akan dijalankan pada interaksi pertama.
+                const playOnFirstInteraction = () => {
+                    playMusic();
+                    // Hapus listener agar hanya berjalan sekali.
+                    document.body.removeEventListener('click', playOnFirstInteraction);
+                    document.body.removeEventListener('touchend', playOnFirstInteraction);
+                };
+
+                // Tambahkan listener untuk interaksi pertama.
+                document.body.addEventListener('click', playOnFirstInteraction);
+                document.body.addEventListener('touchend', playOnFirstInteraction);
+            });
+        }
+        
+        // Hubungkan tombol dengan fungsinya masing-masing
+        playBtn.addEventListener('click', playMusic);
+        pauseBtn.addEventListener('click', pauseMusic);
         
         function createFlowers() {
             const goldColors = ['#FFD700', '#DAA520', '#B8860B', '#F0E68C', '#FAFAD2', '#EEE8AA'];
@@ -307,6 +323,7 @@
             const mainTitleEl = document.getElementById('mainTitle');
             const name1El = document.getElementById('name1');
             const name2El = document.getElementById('name2');
+            const bornDatesEl = document.getElementById('bornDates');
             const ripDatesEl = document.getElementById('ripDates');
             const verse1El = document.getElementById('verse1');
             const verse2El = document.getElementById('verse2');
@@ -316,6 +333,7 @@
             const mainTitleText = mainTitleEl.innerHTML.trim();
             const name1Text = name1El.innerHTML.trim();
             const name2Text = name2El.innerHTML.trim();
+            const bornDatesText = bornDatesEl.innerHTML.trim();
             const ripDatesText = ripDatesEl.innerHTML.trim();
             const verse1Text = verse1El.innerHTML.trim();
             const verse2Text = verse2El.innerHTML.trim();
@@ -324,13 +342,14 @@
             await typeWriter(mainTitleEl, mainTitleText, 120);
             await typeWriter(name1El, name1Text, 100);
             await typeWriter(name2El, name2Text, 100);
+            await typeWriter(bornDatesEl, bornDatesText, 80);
             await typeWriter(ripDatesEl, ripDatesText, 80);
             await typeWriter(verse1El, verse1Text, 70);
             await typeWriter(verse2El, verse2Text, 70);
         }
 
         window.onload = function() {
-            attemptPlayMusic(); 
+            attemptAutoplay();  // Panggil fungsi autoplay yang sudah benar
             createFlowers();    
             startTextAnimations(); // Mulai animasi ketikan teks
         };
