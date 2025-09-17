@@ -16,7 +16,7 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         .overlay {
@@ -141,6 +141,30 @@
         @keyframes blink-caret {
             from, to { opacity: 0 } /* Kursor berkedip */
             50% { opacity: 1 }
+        }
+
+        /* Mobile-first adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 10px; /* Reduce padding for very small screens */
+            }
+
+            h1 {
+                font-size: 2rem; /* Slightly smaller main title */
+            }
+
+            .name {
+                font-size: 1.7rem; /* Slightly smaller name font */
+            }
+
+            .dates,
+            .verse {
+                font-size: 1rem; /* Smaller text for dates and verses */
+            }
+
+            .cross {
+                font-size: 2.5rem;
+            }
         }
 
     </style>
