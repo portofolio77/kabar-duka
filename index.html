@@ -80,11 +80,11 @@
 
         @keyframes float {
             0% {
-                transform: translateY(100vh) translateX(0) rotate(0deg);
+                transform: translateY(-100px) translateX(0) rotate(0deg);
                 opacity: 1;
             }
             100% {
-                transform: translateY(-100px) translateX(calc(var(--random-x) * 80px)) rotate(calc(var(--random-rotate) * 1deg));
+                transform: translateY(100vh) translateX(calc(var(--random-x) * 80px)) rotate(calc(var(--random-rotate) * 1deg));
                 opacity: 0;
             }
         }
@@ -292,7 +292,6 @@
                 flower.style.fontSize = `${size}px`;
                 const startX = Math.random() * window.innerWidth;
                 flower.style.left = `${startX}px`;
-                flower.style.bottom = `-${size}px`;
                 const randomX = Math.random() * 1.0 - 0.5;
                 flower.style.setProperty('--random-x', randomX);
                 const randomRotate = Math.random() * 720 - 360;
