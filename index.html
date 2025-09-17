@@ -74,7 +74,7 @@
         .flower {
             position: fixed;
             pointer-events: none;
-            z-index: 10;
+            z-index: 100;
             animation: float linear forwards;
         }
 
@@ -280,7 +280,7 @@
         pauseBtn.addEventListener('click', pauseMusic);
         
         function createFlowers() {
-            const goldColors = ['#FFD700', '#DAA520', '#B8860B', '#F0E68C', '#FAFAD2', '#EEE8AA'];
+            const goldColors = ['#FFFF00', '#FFD700', '#FFFACD']; // Bright yellow shades
             const flowerSymbols = ['❀', '✿', '❁', '🌸', '🏵️', '🌺', '🌻', '🌼', '🌷', '⚘'];
             function createFlower() {
                 const flower = document.createElement('div');
